@@ -76,23 +76,62 @@ class Deck {
   }
 
   dealCard() {
-    let newCard = this.deck[0];
+    let newCard = this.deck.pop()
+
+    // add error if no card
     return newCard;
+  }
+}
+
+class Pile {
+  constructor(id) {
+    this.id = id;
+    this.cards = [];
+  }
+
+  addCard(card) {
+    this.cards.push(card)
+  }
+
+  getPile() {
+    return this.cards;
   }
 }
 
 class Game {
   constructor() {
     this.deck = new Deck       // <---- IN FUTURE: add ability for multiple games
+    this.piles = []
+    this.pile_count = 0
+  }
+
+  deal(amount, pileID) {
+    if (!pileID) {
+      pileID = this.pile_count;
+      let pile = new Pile(pileID);
+      this.piles.push(pile);
+      this.pile_count += 1;
+    }
+    for (let i=0; i<amount; i++) {
+      let card = this.deck.dealCard();
+      this.piles[pileID].addCard(card);
+    }
+    return(this.piles[pileID]);
   }
 
   initialize() {
+
     this.deck.shuffle();
-    let first = this.deck.dealCard();
-    let img = $('<img>').attr('src', first.getImageURL());
-    img.appendTo('.container');
+    
   }
 
 }
 
-new Game().initialize();
+const newGame = new Game()
+console.log(newGame);
+newGame.initialize();
+
+// for testing
+$('.btn').click(function() {
+  console.log(newGame.deal(2));
+})
